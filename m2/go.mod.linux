@@ -1,0 +1,8 @@
+module AeroMeshNode
+
+go 1.16
+
+require (
+	github.com/libp2p/go-reuseport v0.0.2
+	github.com/spf13/viper v1.7.1
+)

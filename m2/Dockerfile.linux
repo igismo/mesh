@@ -1,0 +1,24 @@
+#*********************************************************************************/
+#// NAME              REV  DATE       REMARKS			@
+#// Goran Scuric      1.0  01012021  Initial design     goran.scuric@aero.org
+#//================================================================================
+#ENV GOLANG_VERSION 1.15.6
+#
+## WINDOWS
+##----------------------------------------------
+#FROM mcr.microsoft.com/windows/nanoserver:1903
+#ADD  cacert.pem  /etc/ssl/certs/
+#ADD AeroMeshNode.exe /
+#CMD ["/AeroMeshNode.exe"]
+#
+## LINUX   export CGO_ENABLED=0
+##----------------------------------------------
+FROM scratch
+FROM alpine
+ADD  cacert.pem  /etc/ssl/certs/
+ADD dronel /
+ADD config1.yml /
+ADD config.yml  /
+ADD config2.yml /
+ADD config3.yml /
+##CMD ["/dronel"]
