@@ -31,7 +31,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/igismo/commonTB"
 	"github.com/spf13/viper"
 	"net"
 	"os"
@@ -509,7 +508,7 @@ func handleGroundInfoMsg(msgHeader *common.MessageHeader) {
 //====================================================================================
 func ControlPlaneProcessDiscoveryMessage(msgHeader *common.MessageHeader,
 
-// TODO: handle unicast and broadcast separatelly ??
+	// TODO: handle unicast and broadcast separatelly ??
 	discoveryMsg *common.DiscoveryMsgBody) {
 	//fmt.Println("Discovery MSG in state ", M2.M2State)
 	switch M2.M2TerminalState {

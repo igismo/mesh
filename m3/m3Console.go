@@ -18,12 +18,12 @@ import (
 	"strings"
 )
 
-var ConsoleInput = make(chan string)
+var ConsoleInput = make(chan []string)
 
 //=======================================================================
 // Early work to test some options for officeMaster console
 //=======================================================================
-func StartConsole(consoleInput <-chan string) {
+func StartConsole(consoleInput <-chan []string) {
 	// runtime.GOMAXPROCS(2)
 	go func(ch <-chan string) {
 		// reader := bufio.NewReader(os.Stdin)
@@ -51,11 +51,11 @@ func StartConsole(consoleInput <-chan string) {
 
 			// SendTextMsg(s)
 			// myRecvChannel <- recvBuffer[0:length]
-			ConsoleInput <- s
+
 			s1 := strings.Split(s, "\n")
 			sa := strings.Split(s1[0], " ")
 			//for i := 0; i < len; i++ {println("START SA[", i, "]=", sa[i])}
-
+			ConsoleInput <- sa
 			switch sa[0] {
 			case "quit":
 				common.ControlPlaneCloseConnections(M3.Connectivity)

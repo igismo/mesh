@@ -70,7 +70,7 @@ func InitM3Configuration() {
 	M3.Channels.UnicastRcvCtrlChannel = make(chan []byte) //
 	M3.Channels.BroadcastRcvCtrlChannel = make(chan []byte)
 	M3.Channels.MulticastRcvCtrlChannel = make(chan []byte)
-	M3.Channels.CmdChannel = make(chan []byte) // receive command line cmnds
+	M3.Channels.CmdChannel = make(chan []string) // receive command line cmnds
 
 	M3.Connectivity.BroadcastRxAddress = ":9999"
 	M3.Connectivity.BroadcastRxPort = "9999"
@@ -83,7 +83,7 @@ func InitM3Configuration() {
 	M3.Connectivity.UnicastRxPort = "8888"
 	M3.Connectivity.UnicastRxIP = ""
 	M3.Connectivity.UnicastTxPort = "8888"
-	M3.Connectivity.UnicastRxConnection = nil
+	M3.Connectivity.UnicastConnection = nil
 	M3.Connectivity.UnicastRxStruct = nil
 	M3.Connectivity.UnicastTxStruct = new(net.UDPAddr)
 
@@ -309,10 +309,10 @@ func main() {
 	var err error
 	checkErrorNode(err)
 
-	common.ControlPlaneInit(M3.Connectivity, M3.Channels)
+	common.ControlPlaneInit(&M3.Connectivity, M3.Channels)
 
 	// START SEND AND RECEIVE THREADS:
-	err2 := common.ControlPlaneRecvThread(M3.Connectivity, M3.Channels)
+	err2 := common.ControlPlaneRecvThread(&M3.Connectivity, M3.Channels)
 	if err2 != nil {
 		fmt.Println(M3.M3TerminalName, "INIT: Error creating Broadcast/Unicast RX thread")
 		panic(err2)
@@ -342,7 +342,7 @@ func main() {
 	//================================================================================
 	// START CONSOLE:
 	//================================================================================
-	StartConsole(ConsoleInput)
+	StartConsole(M3.Channels.CmdChannel)
 
 	//================================================================================
 	// RECEIVE AND PROCESS MESSAGES: Control Plane msgs, and Commands from console
@@ -362,15 +362,22 @@ func main() {
 			//fmt.Println(M3.M3Name, "MAIN: Multicast MSG in state", M3.M3State, "MSG=",string(MulticastMsg))
 			// these include text messages from the ground/controller
 			ControlPlaneMessages(MulticastMsg)
-		case CmdText, ok := <-ConsoleInput: // These are messsages from local M3 console
+		case CmdText, ok := <-M3.Channels.CmdChannel: // These are messsages from local M3 console
+			fmt.Println("====> MAIN: Console Input: ", CmdText)
+
 			if !ok {
 				fmt.Println("ERROR Reading input from stdin:", CmdText)
 				break
 			} else {
-				fmt.Println("Read input from stdin:", CmdText)
-				LocalCommandMessages(CmdText)
+				// fmt.Println("Read input from stdin:", CmdText)
+				// LocalCommandMessages(CmdText)
 				// SendTextMsg(stdin)
 				// fmt.Println("Console input sent to ground");
+				switch CmdText[0] { // switch on console command
+				case "status":
+					fmt.Println("STATUS REPLY: Name=", M3.M3TerminalName, " State=", M3.M3TerminalState)
+				}
+
 			}
 			//default:
 			//	fmt.Println("done and exit select")
