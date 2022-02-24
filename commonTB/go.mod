@@ -1,3 +1,3 @@
-module ggithub.com/igismo/commonTB
+module github.com/igismo/commonTB
 
 go 1.17

@@ -9,6 +9,7 @@ import (
 // M3 terminal has one of these for each of the 4 M2 terminals
 // and one of these for the M1 terminal
 //======================================================================
+// For synapse this should be removed one of these days ...
 type TerminalInfo struct {
 	TerminalTimeCreated       float64 // time.Time // int64 // string    // time
 	TerminalLastChangeTime    float64 // string // time.Time // time
@@ -51,7 +52,7 @@ type ConnectivityInfo struct {
 	UnicastRxAddress    string
 	UnicastRxStruct     *net.UDPAddr
 	UnicastTxStruct     *net.UDPAddr
-	UnicastRxConnection net.PacketConn //*net.UDPConn
+	UnicastConnection net.PacketConn //*net.UDPConn
 	UnicastTxPort       string
 	//----------
 	BroadcastTxIP       string
@@ -67,26 +68,59 @@ type ConnectivityInfo struct {
 
 type MyChannels struct {
 	ControlChannel          chan []byte
-	CmdChannel              chan []byte
+	CmdChannel              chan []string
 	UnicastRcvCtrlChannel   chan []byte
 	BroadcastRcvCtrlChannel chan []byte
 	MulticastRcvCtrlChannel chan []byte
 }
 
-// m1 terminal own info
-type M1Info struct {
-	m3Terminal   TerminalInfo
-	Connectivity ConnectivityInfo
-	Channels     MyChannels
-	// other own info
-}
-
 // m2 terminal own info
 type M2Info struct {
-	m3Terminal   TerminalInfo
-	Connectivity ConnectivityInfo
-	Channels     MyChannels
-	// other own info
+	M2TerminalState     			string
+	M2TerminalActive    			bool
+
+	M2TerminalName      			string
+	M2TerminalFullName  			NameId
+	M2TerminalId        			int
+
+	M2Connectivity        			ConnectivityInfo
+	M2Channels            			MyChannels
+	//-----------------------
+	M2TerminalConnectionTimer  		int64
+	M2TerminalReceiveCount     		int64
+	M2TerminalSendCount        		int64
+	M2TerminalMsgLastSentAt  		float64
+
+	M2TerminalTimeCreated      		time.Time
+	M2TerminalLastChangeTime   		float64
+	M2TerminalHelloTimerLength		int64
+	M2TerminalLastHelloSendTime  	int64
+	M2TerminalLastHelloReceiveTime 	int64
+
+	M3TerminalIP					string
+	M3TerminalPort					string
+
+	M2TerminalIP        			string
+	M2TerminalPort      			string
+	M2TerminalIPandPort 			string
+	M2TerminalMac       			string
+
+	M2BroadcastTxPort				string
+	M2BroadcastTxIP					string
+	M2BroadcastRxPort				string
+	M2BroadcastRxIP					string
+
+	M2UnicastRxPort					string
+	M2UnicastRxIP					string //       "239.0.0.0"
+	M2UnicastTxPort					string
+
+	M2TerminalNextMsgSeq     		int
+	M2TerminalMsgsSent       		int64
+	M2TerminalMsgsRcvd       		int64
+
+	M2TerminalUdpAddrStructure *net.UDPAddr
+
+	M2TerminalLogPath string
 }
 
 // m3Info ======================================================

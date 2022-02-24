@@ -82,9 +82,6 @@ type CommandList []LinuxCommand
 //----------------------------------------------------------------------------
 // .... MsgCode ...
 //----------------------------------------------------------------------------
-const MSG_TYPE_CTRL_ADD_DRONE = "DRONE_ADD"
-const MSG_TYPE_CTRL_DELETE_DRONE = "DRONE_DELETE"
-const MSG_TYPE_CTRL_SET_CANVAS = "SET_CANVAS"
 const MSG_TYPE_CTRL_1 = "CTRL_1"
 const MSG_TYPE_CTRL_2 = "CTRL_2"
 const MSG_TYPE_CTRL_3 = "CTRL_3"
@@ -122,9 +119,6 @@ type StatusReplyMsgBody struct {
 	MsgLastRcvdAt  float64 // time.Time //string // time
 	MsgsSent       int64
 	MsgsRcvd       int64
-	Gateways       string // no support in C++ for uint64 // contains all possible relay nodes
-	Subscribers    string //uint64
-	BaseStations   string //uint64
 }
 
 const MSG_TYPE_DRONE_TERMINATE = "DRONE_TERMINATE"
@@ -164,9 +158,6 @@ type DiscoveryMsgBody struct {
 	MsgLastRcvdAt  float64 // time.Time //string // time
 	MsgsSent       int64
 	MsgsRcvd       int64
-	Gateways       string // no support in C++ for uint64 // contains all possible relay nodes
-	Subscribers    string //uint64
-	BaseStations   string //uint64
 }
 
 const MSG_TYPE_CMD = "COMMANDS"

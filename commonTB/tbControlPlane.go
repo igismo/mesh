@@ -12,7 +12,7 @@ import (
 //====================================================================================
 //
 //====================================================================================
-func ControlPlaneInit(connectivity ConnectivityInfo, channels MyChannels) {
+func ControlPlaneInit(connectivity *ConnectivityInfo, channels MyChannels) {
 	var err error
 
 	channels.ControlChannel = make(chan []byte) // so that all threads can talk to us
@@ -22,14 +22,14 @@ func ControlPlaneInit(connectivity ConnectivityInfo, channels MyChannels) {
 		Drone.UnicastRxStruct, err = net.ResolveUDPAddr("udp", Drone.UnicastRxAddress)
 		if err != nil { log.Fatal(err) }
 		fmt.Println(Drone.DroneName, "1Init ControlPlane UnicastRxStruct", Drone.UnicastRxStruct)
-		Drone.UnicastRxConnection, err = net.ListenMulticastUDP("udp", nil, Drone.UnicastRxStruct)
+		Drone.UnicastConnection, err = net.ListenMulticastUDP("udp", nil, Drone.UnicastRxStruct)
 		if err != nil {
-			fmt.Println(Drone.DroneName, "2Init ControlPlane ERROR UnicastRxConnection err=", err)
-			fmt.Println(Drone.DroneName, "3Init ControlPlane ERROR UnicastRxConnection =", Drone.UnicastRxConnection)
+			fmt.Println(Drone.DroneName, "2Init ControlPlane ERROR UnicastConnection err=", err)
+			fmt.Println(Drone.DroneName, "3Init ControlPlane ERROR UnicastConnection =", Drone.UnicastConnection)
 		} else {
-			Drone.UnicastRxConnection.SetReadBuffer(Drone.MaxDatagramSize)
+			Drone.UnicastConnection.SetReadBuffer(Drone.MaxDatagramSize)
 			fmt.Println(Drone.DroneName, "4Init ControlPlane OK: UnicastRxAddrStruct=", Drone.UnicastRxStruct)
-			fmt.Println(Drone.DroneName, "5Init ControlPlane OK: UnicastRxConnection=", Drone.UnicastRxConnection.LocalAddr())
+			fmt.Println(Drone.DroneName, "5Init ControlPlane OK: UnicastConnection=", Drone.UnicastConnection.LocalAddr())
 		}
 	*/
 	connectivity.UnicastRxStruct, err = net.ResolveUDPAddr("udp", ":"+connectivity.UnicastRxPort) //Drone.UnicastRxAddress)
@@ -37,17 +37,17 @@ func ControlPlaneInit(connectivity ConnectivityInfo, channels MyChannels) {
 		log.Fatal(err)
 	} else {
 		fmt.Println("1Init OK ControlPlane UnicastRxStruct", connectivity.UnicastRxStruct)
-		// Drone.UnicastRxConnection, err = net.ListenUDP("udp", Drone.UnicastRxStruct)
-		connectivity.UnicastRxConnection, err =
+		// Drone.UnicastConnection, err = net.ListenUDP("udp", Drone.UnicastRxStruct)
+		connectivity.UnicastConnection, err =
 			reuseport.ListenPacket("udp", ":"+connectivity.UnicastRxPort)
 		if err != nil {
-			fmt.Println("2Init ControlPlane ERROR UnicastRxConnection err=", err)
+			fmt.Println("2Init ControlPlane ERROR UnicastConnection err=", err)
 			panic(err)
 		} else {
-			//Drone.UnicastRxConnection.SetReadBuffer(Drone.MaxDatagramSize)
-			fmt.Println("3Init ControlPlane OK: UnicastRxConnection=",
-				connectivity.UnicastRxConnection.LocalAddr())
-			//defer Drone.UnicastRxConnection.Close()
+			//Drone.UnicastConnection.SetReadBuffer(Drone.MaxDatagramSize)
+			fmt.Println("3Init ControlPlane OK: UnicastConnection=",
+				connectivity.UnicastConnection.LocalAddr())
+			//defer Drone.UnicastConnection.Close()
 		}
 	}
 	//BROADCAST
@@ -83,7 +83,7 @@ func ControlPlaneInit(connectivity ConnectivityInfo, channels MyChannels) {
 			}
 		} else { // SAME
 			fmt.Println(Drone.DroneName, "12Init ControlPlane Broadcast socket listen on unicast ", Drone.BroadcastRxAddress)
-			Drone.BroadcastConnection = Drone.UnicastRxConnection
+			Drone.BroadcastConnection = Drone.UnicastConnection
 		}
 	*/
 	// DONE
@@ -91,19 +91,20 @@ func ControlPlaneInit(connectivity ConnectivityInfo, channels MyChannels) {
 }
 func ControlPlaneCloseConnections(connectivity ConnectivityInfo) {
 	fmt.Println(" CLOSE NETWORK CONNECTIONS")
-	defer connectivity.UnicastRxConnection.Close()
+	defer connectivity.UnicastConnection.Close()
 	defer connectivity.BroadcastConnection.Close()
 }
+
 
 //====================================================================================
 //  Control Plane Listen To Unicast UDP
 //====================================================================================
-func ControlPlaneListenToUnicastUDP(connectivity ConnectivityInfo, channels MyChannels) {
-	fmt.Println("UNICAST *** Start Receiving on ", connectivity.UnicastRxConnection.LocalAddr())
+func ControlPlaneListenToUnicastUDP(connectivity *ConnectivityInfo, channels MyChannels) {
+	fmt.Println("UNICAST *** Start Receiving on ", connectivity.UnicastConnection.LocalAddr())
 	go func() {
 		for {
 			unicastBuffer := make([]byte, 2400) // Drone.MaxDatagramSize)
-			length, sender, err := connectivity.UnicastRxConnection.ReadFrom(unicastBuffer)
+			length, sender, err := connectivity.UnicastConnection.ReadFrom(unicastBuffer)
 
 			if err != nil {
 				log.Fatal(sender, "UNICAST ReadFromUDP failed:", err)
@@ -118,7 +119,7 @@ func ControlPlaneListenToUnicastUDP(connectivity ConnectivityInfo, channels MyCh
 //====================================================================================
 //  Control Plane Listen To Broadcast UDP
 //====================================================================================
-func ControlPlaneListenToBroadcastUDP(connectivity ConnectivityInfo, channels MyChannels) {
+func ControlPlaneListenToBroadcastUDP(connectivity *ConnectivityInfo, channels MyChannels) {
 	if connectivity.BroadcastConnection != nil {
 		fmt.Println("BROADCAST *** Start Receiving on ", connectivity.BroadcastConnection.LocalAddr())
 	} else {
@@ -144,12 +145,12 @@ func ControlPlaneListenToBroadcastUDP(connectivity ConnectivityInfo, channels My
 //====================================================================================
 //  Rcv  BROADCAST thread
 //====================================================================================
-func ControlPlaneRecvThread(connectivity ConnectivityInfo, channels MyChannels) error {
+func ControlPlaneRecvThread(connectivity *ConnectivityInfo, channels MyChannels) error {
 	var err error = nil
 
 	fmt.Println("UDP Receive: ControlPlaneRecvThread: Start RECV THRED")
 
-	if connectivity.UnicastRxConnection != nil {
+	if connectivity.UnicastConnection != nil {
 		ControlPlaneListenToUnicastUDP(connectivity, channels)
 	}
 	ControlPlaneListenToBroadcastUDP(connectivity, channels)
@@ -181,7 +182,7 @@ func ControlPlaneUnicastSend(connectivity ConnectivityInfo, msgOut []byte, unica
 	if err3 != nil {
 		fmt.Println("ERROR UNICAST Set UnicastTxStruct Out to ", unicastIPandPort, " Err=", err3)
 	}
-	_, err4 := connectivity.UnicastRxConnection.WriteTo(msgOut, connectivity.UnicastTxStruct)
+	_, err4 := connectivity.UnicastConnection.WriteTo(msgOut, connectivity.UnicastTxStruct)
 	if err4 != nil {
 		fmt.Println("ERROR UNICAST Sending Out to", unicastIPandPort, ": UnicastTxStruct=",
 			connectivity.UnicastTxStruct, " Err=", err4)
