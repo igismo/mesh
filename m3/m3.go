@@ -309,7 +309,7 @@ func main() {
 	var err error
 	checkErrorNode(err)
 
-	common.ControlPlaneInit(&M3.Connectivity, M3.Channels)
+	common.ControlPlaneInit(&(M3.Connectivity), M3.Channels)
 
 	// START SEND AND RECEIVE THREADS:
 	err2 := common.ControlPlaneRecvThread(&M3.Connectivity, M3.Channels)
@@ -342,7 +342,7 @@ func main() {
 	//================================================================================
 	// START CONSOLE:
 	//================================================================================
-	StartConsole(M3.Channels.CmdChannel)
+	StartConsole(ConsoleInput)
 
 	//================================================================================
 	// RECEIVE AND PROCESS MESSAGES: Control Plane msgs, and Commands from console
@@ -362,7 +362,7 @@ func main() {
 			//fmt.Println(M3.M3Name, "MAIN: Multicast MSG in state", M3.M3State, "MSG=",string(MulticastMsg))
 			// these include text messages from the ground/controller
 			ControlPlaneMessages(MulticastMsg)
-		case CmdText, ok := <-M3.Channels.CmdChannel: // These are messsages from local M3 console
+		case CmdText, ok := <-ConsoleInput: // These are messsages from local M3 console
 			fmt.Println("====> MAIN: Console Input: ", CmdText)
 
 			if !ok {
@@ -373,7 +373,7 @@ func main() {
 				// LocalCommandMessages(CmdText)
 				// SendTextMsg(stdin)
 				// fmt.Println("Console input sent to ground");
-				switch CmdText[0] { // switch on console command
+				switch string(CmdText[0]) { // switch on console command
 				case "status":
 					fmt.Println("STATUS REPLY: Name=", M3.M3TerminalName, " State=", M3.M3TerminalState)
 				}
