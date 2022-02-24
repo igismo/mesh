@@ -31,7 +31,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/igismo/commonTB"
+        "github.com/igismo/synapse/commonTB"
 	"github.com/spf13/viper"
 	"net"
 	"os"

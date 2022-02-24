@@ -2,10 +2,10 @@ module synapse/m2
 
 go 1.17
 
-replace github.com/igismo/commonTB => ../commonTB
+replace github.com/igismo/synapse/commonTB => ../commonTB
 
 require (
-	github.com/igismo/commonTB v0.0.0-00010101000000-000000000000
+	github.com/igismo/synapse/commonTB v0.0.0-00010101000000-000000000000
 	github.com/spf13/viper v1.10.1
 )
 

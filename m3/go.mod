@@ -1,9 +1,11 @@
-module m3
+module synapse/m3
 
 go 1.17
 
+replace github.com/igismo/synapse/commonTB => ../commonTB
+
 require (
-	github.com/igismo/commonTB v0.0.0-00010101000000-000000000000
+	github.com/igismo/synapse/commonTB v0.0.0-00010101000000-000000000000
 	github.com/spf13/viper v1.10.1
 )
 
@@ -24,5 +26,3 @@ require (
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/igismo/commonTB => ../commonTB

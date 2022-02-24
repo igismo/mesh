@@ -17,7 +17,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/igismo/commonTB"
+	"github.com/igismo/synapse/commonTB"
 	"github.com/spf13/viper"
 	"net"
 	"os"
@@ -72,17 +72,17 @@ func InitM3Configuration() {
 	M3.Channels.MulticastRcvCtrlChannel = make(chan []byte)
 	M3.Channels.CmdChannel = make(chan []string) // receive command line cmnds
 
-	M3.Connectivity.BroadcastRxAddress = ":9999"
-	M3.Connectivity.BroadcastRxPort = "9999"
+	M3.Connectivity.BroadcastRxAddress = ":48999"
+	M3.Connectivity.BroadcastRxPort = "48999"
 	M3.Connectivity.BroadcastRxIP = ""
-	M3.Connectivity.BroadcastTxPort = "8888"
+	M3.Connectivity.BroadcastTxPort = "48888"
 	M3.Connectivity.BroadcastConnection = nil
 	M3.Connectivity.BroadcastTxStruct = new(net.UDPAddr)
 
-	M3.Connectivity.UnicastRxAddress = ":8888"
-	M3.Connectivity.UnicastRxPort = "8888"
+	M3.Connectivity.UnicastRxAddress = ":48888"
+	M3.Connectivity.UnicastRxPort = "48888"
 	M3.Connectivity.UnicastRxIP = ""
-	M3.Connectivity.UnicastTxPort = "8888"
+	M3.Connectivity.UnicastTxPort = "48888"
 	M3.Connectivity.UnicastConnection = nil
 	M3.Connectivity.UnicastRxStruct = nil
 	M3.Connectivity.UnicastTxStruct = new(net.UDPAddr)

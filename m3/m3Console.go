@@ -12,7 +12,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/igismo/commonTB"
+	"github.com/igismo/synapse/commonTB"
 	"os"
 	"strings"
 )
