@@ -12,21 +12,19 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"github.com/igismo/commonTB"
 	"os"
-	"runtime"
-
-	//"strconv"
 	"strings"
 )
 
-var ConsoleInput = make(chan string)
+var ConsoleInput = make(chan []string)
 
-//=======================================================================
+// StartConsole =========================================================
 // Early work to test some options for officeMaster console
 //=======================================================================
-func StartConsole(consoleInput <-chan string) {
+func StartConsole(consoleInput <-chan []string) {
 	// runtime.GOMAXPROCS(2)
-	go func(ch <-chan string) {
+	go func(ch <-chan []string) {
 		// reader := bufio.NewReader(os.Stdin)
 		scanner := bufio.NewScanner(os.Stdin)
 
@@ -39,35 +37,35 @@ func StartConsole(consoleInput <-chan string) {
 			//fmt.Println("OS=", runtime.GOOS, "  LENGTH=" ,len(s), " INPUT=", s)
 
 			//scanner.Scan()
-			fmt.Println("STDIN: LENGTH=", len(scanner.Text()), "INPUT=", scanner.Text())
+			fmt.Println("Console STDIN: LENGTH=", len(scanner.Text()), "INPUT=", scanner.Text())
 			s := scanner.Text()
 			//fi, err := os.Stdin.Stat()
 
 			s = strings.Replace(s, "\n", "", -1)
 			s = strings.Replace(s, "\r", "", -1) // just in a case
-			fmt.Println("OS=", runtime.GOOS, " PROCS=", runtime.GOMAXPROCS(0), " LENGTH=", len(s), " INPUT=", s)
+			// fmt.Println("OS=", runtime.GOOS, " PROCS=", runtime.GOMAXPROCS(0), " LENGTH=", len(s), " INPUT=", s)
 			if len(s) < 2 {
 				continue
 			}
 
-			// SendTextMsg(s)
-			// myRecvChannel <- recvBuffer[0:length]
-			ConsoleInput <- s
 			s1 := strings.Split(s, "\n")
 			sa := strings.Split(s1[0], " ")
 			//for i := 0; i < len; i++ {println("START SA[", i, "]=", sa[i])}
+			//commandText [] string = sa
 
+			ConsoleInput <- sa
 			switch sa[0] {
 			case "quit":
-				ControlPlaneCloseConnections()
+				common.ControlPlaneCloseConnections(M2.M2Connectivity)
 				fmt.Printf("Exiting\n")
 				os.Exit(0)
 			case "exit":
-				ControlPlaneCloseConnections()
+				common.ControlPlaneCloseConnections(M2.M2Connectivity)
 				fmt.Printf("Exiting\n")
 				os.Exit(0)
 			case "help":
-				fmt.Printf("No HELP available yet\n")
+				//fmt.Printf("No HELP available yet\n")
+				//M2.M2Channels.CmdChannel <- []byte(s)
 			case "enable":
 				// Me.NodeActive = true
 				//var _ = swapinCommand.Parse(sa[1:])

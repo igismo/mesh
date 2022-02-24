@@ -1,0 +1,20 @@
+M2TerminalId: 3
+M2TerminalName: "M2A"
+#M2TerminalIP: "10.0.1.3"
+M2TerminalPort: 48888
+#M3TerminalIP:
+#M3TerminalPort:
+#-----------------------------------
+M2BroadcastTxPort:    "48999"
+M2BroadcastTxIP:      "255.255.255.255"
+M2BroadcastRxPort:    "48999"
+M2BroadcastRxIP:      ""
+#-----------------------------------
+M2UnicastRxPort:      "48888"
+#UnicastRxIP:        "239.83.100.109"
+M2UnicastRxIP:        "239.0.0.0"
+M2UnicastTxPort:      "48888"
+#----------------------------------
+M2TerminalConnectionTimer: 5
+M2TerminalLogPath: "C:/Users/GS31342/go/log/"
+## ========================================
